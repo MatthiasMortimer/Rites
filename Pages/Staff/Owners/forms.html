@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RitesCommunities – Work Forms & Files</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 40px auto;
+      background: #f4f4f4;
+      padding: 20px;
+      border-radius: 12px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin: 10px 0;
+      padding: 10px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    a {
+      text-decoration: none;
+      color: #0077cc;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>RitesCommunities</h1>
+  <h2>📁 Work Forms & Files</h2>
+
+  <ul id="file-list"></ul>
+
+  <script>
+    // ⬇⬇⬇ LIST (Name and Share Link) ⬇⬇⬇
+    const files = [
+      { name: "Ownership Agreement", link: "https://drive.google.com/file/d/EXAMPLE1/view" },
+      { name: "Partnership Form", link: "https://drive.google.com/file/d/EXAMPLE2/view" },
+      { name: "Community Guidelines", link: "https://drive.google.com/file/d/EXAMPLE3/view" }
+    ];
+    // ⬆⬆⬆ LIST ⬆⬆⬆
+
+    const fileList = document.getElementById('file-list');
+    files.forEach(file => {
+      const li = document.createElement('li');
+      const link = document.createElement('a');
+      link.href = file.link;
+      link.textContent = file.name;
+      link.target = "_blank";
+      li.appendChild(link);
+      fileList.appendChild(li);
+    });
+  </script>
+
+</body>
+</html>
