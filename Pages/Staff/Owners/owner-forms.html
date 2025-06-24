@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RitesCommunities – Work Forms & Files</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 40px auto;
+      background: #f4f4f4;
+      padding: 20px;
+      border-radius: 12px;
+    }
+    h1, h2 {
+      text-align: center;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+    li {
+      margin: 10px 0;
+      padding: 10px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    a {
+      text-decoration: none;
+      color: #0077cc;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>RitesCommunities</h1>
+  <h2>📁 Work Forms & Files</h2>
+
+  <ul id="file-list"></ul>
+
+  <script>
+    // ⬇⬇⬇ EDIT THIS LIST TO ADD NEW FILES (Name and Share Link) ⬇⬇⬇
+    //      { name: "FileNameHere", link: "LinkHere" },
+    const files = [
+      { name: "Directives and Contracts", link: "https://1drv.ms/w/c/7da61b5a834d1a8f/EQDagtbqO25IgjNgWH455LIBtOlepW6iCYDZ-vZoWk4hhg?e=aVUBU2" },
+      { name: "Staff Matrix", link: "https://docs.google.com/spreadsheets/d/1c6g4DzMheOxZIhC8DLBsCl0ix3LL75Ic/edit?usp=sharing&ouid=112514670728995682881&rtpof=true&sd=true" },
+      { name: "Staff Manual", link: "https://1drv.ms/w/c/7da61b5a834d1a8f/EfoFfLUqnmFNp2nHe03kIxsB2-xCtC_9VQzNhXTm1kpZTQ?e=TYhrDa" }
+    ];
+    // ⬆⬆⬆ EDIT THIS LIST TO ADD NEW FILES ⬆⬆⬆
+
+    const fileList = document.getElementById('file-list');
+    files.forEach(file => {
+      const li = document.createElement('li');
+      const link = document.createElement('a');
+      link.href = file.link;
+      link.textContent = file.name;
+      link.target = "_blank";
+      li.appendChild(link);
+      fileList.appendChild(li);
+    });
+  </script>
+
+</body>
+</html>
