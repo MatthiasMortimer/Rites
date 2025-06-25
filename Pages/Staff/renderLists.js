@@ -1,19 +1,10 @@
-function renderList(listId) {
+// renderLists.js
+function renderList(listId, containerId) {
   const list = docLists[listId];
   if (!list) return;
 
-  // Container ID convention
-  const containerId = "fileList" + listId.replace(/\D/g, "");
-
-  // Check if container exists, else create it and append to body or a specific parent
-  let container = document.getElementById(containerId);
-  if (!container) {
-    container = document.createElement("ul");
-    container.id = containerId;
-
-    // Append the container somewhere meaningful — example: append to body or a specific div
-    document.body.appendChild(container);
-  }
+  const container = document.getElementById(containerId);
+  if (!container) return;
 
   list.forEach(item => {
     const li = document.createElement("li");

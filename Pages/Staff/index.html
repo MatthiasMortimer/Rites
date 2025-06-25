@@ -19,7 +19,7 @@
       if (userInput !== password1a) {
         document.body.innerHTML = "<h2>Access Denied</h2><p>Incorrect password.</p>";
       }
-      renderList("list2");
+      renderList("list2", "fileList2");
     });
   </script>
 </head>
@@ -31,7 +31,11 @@
 
   <h1>Our Staff</h1>
   <p>Meet the team behind Rites.</p>
+  <p> Important documents: </p>
+  <ul id="fileList2"></ul>
 
   <script src="script.js" defer></script>
+
+
 </body>
 </html>
