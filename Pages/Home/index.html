@@ -7,6 +7,24 @@
   <!-- Load password values -->
   <script src="../Staff/Owners/passwords.js"></script>
   <script src="script.js" defer></script>
+
+  <!-- Password check -->
+<!-- Loads password value from external file and prompts user to enter it.
+     If incorrect, the page is replaced with an 'Access Denied' message.
+     If correct, redirects user to the Owner page. --> 
+<script src="Pages/Staff/Owners/passwords.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const userInput = prompt("Enter the password to view this page:");
+
+    if (userInput !== password1a) {
+      document.body.innerHTML = "<h2>Access Denied</h2><p>Incorrect password.</p>";
+    } else {
+      window.location.href = "../Staff/Owners/index.html";
+    }
+  });
+</script>
+  
 </head>
 <body>
   <nav>
