@@ -1,32 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Home - Rites</title>
-  <!-- Load the passwords and logic scripts -->
-  <script src="../Staff/Owners/passwords.js"></script>
-  <script src="../Staff/Owners/passwordsjs.js" defer></script>
 
+  <!-- Load credentials first -->
+  <script src="../Staff/Owners/passwords.js"></script>
+  <!-- Load the handler second -->
+  <script src="../Staff/Owners/passwordsjs.js"></script>
 </head>
 <body>
-  <!-- Buttons must match the IDs in passwords.js -->
+  <h1>Welcome to Rites</h1>
+
+  <!-- Buttons must match IDs in passwords.js -->
   <button id="ownerBtn">Owner Area</button>
   <button id="modBtn">Moderator Area</button>
   <button id="homeBtn">Public Info</button>
 
-  <h1>Welcome to Rites</h1>
-  <p>This is the home page.</p>
-//test4.4
-  <div>
-    <label for="accessCode">Owner Access Code:</label>
-    <input type="text" id="accessCode" />
-    <button onclick="checkCode()">Submit</button>
-  </div>
-
-  <!-- Initialize the password system -->
+  <!-- Initialize logic after the DOM is loaded -->
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      initPasswordChecks(""); // You're already in /Home/
+    window.addEventListener("DOMContentLoaded", () => {
+      initPasswordChecks(""); // No folder depth; you're already in Home/
     });
   </script>
 </body>
