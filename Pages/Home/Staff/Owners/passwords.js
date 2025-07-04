@@ -8,7 +8,7 @@ window.credentials = {
   },
     modBtn: {
     password: "modPass123",
-    destination: "Staff/Mods/"
+    destination: "../Home/Staff/Owners"
   },
     homeBtn: {
     password: "np",
