@@ -3,25 +3,15 @@
 <script src="Owners/passwords.js"></script>
 <script src="Owners/doclists.js"></script>
 <script src="Owners/renderLists.js"></script>
-
+<script src="Owners/passwordsjs.js"></script>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Staff - Rites</title>
 
   <!-- Load password definitions -->
-  <script src="Owners/passwords.js"></script>
-    
-  <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const userInput = prompt("Enter the password to view this page:");
 
-      if (userInput !== password1a) {
-        document.body.innerHTML = "<h2>Access Denied</h2><p>Incorrect password.</p>";
-      }
-      renderList("list2", "fileList2");
-    });
-  </script>
+  <!--end password-->
 </head>
 <body>
   <nav>

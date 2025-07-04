@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <title>Home - Rites</title>
-  <!-- Load JavaScript with password values first -->
+  <!-- Load JavaScript with password values -->
   <script src="../Staff/Owners/passwords.js"></script>
-  <script src="script.js" defer></script>
+
 </head>
 <body>
-  <nav>
-    <a href="../Home/">Home</a> |
-    <a href="../Staff/">Staff</a>
-  </nav>
+  <!-- Buttons must match the IDs in passwords.js -->
+  <button id="ownerBtn">Owner Area</button>
+  <button id="modBtn">Moderator Area</button>
+  <button id="homeBtn">Public Info</button>
 
   <h1>Welcome to Rites</h1>
   <p>This is the home page.</p>
@@ -22,22 +22,11 @@
     <button onclick="checkCode()">Submit</button>
   </div>
 
+  <!-- Initialize the password system -->
   <script>
-    // Make sure password1b is defined in passwords.js
-    function checkCode() {
-      const codeInput = document.getElementById("accessCode").value;
-
-      if (typeof password1b === 'undefined') {
-        alert("Password not loaded correctly.");
-        return;
-      }
-
-      if (codeInput === password1b) {
-        window.location.href = "../Staff/Owners/index.html";
-      } else {
-        alert("Incorrect password.");
-      }
-    }
+    document.addEventListener("DOMContentLoaded", () => {
+      initPasswordChecks(""); // You're already in /Home/
+    });
   </script>
 </body>
 </html>
