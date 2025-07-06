@@ -7,7 +7,8 @@ Rites-gh-pages/
 │       │   │   ├── README.txt  
 │       │   │   ├── index.html  
 │       │   │   ├── passwords.js  
-│       │   │   └── passwordsjs.js  
+│       │   │   └── passwordsjs.js
+│       │   │   └── README.txt   
 │       │   ├── doclists.js  
 │       │   ├── index.html  
 │       │   └── renderLists.js  
