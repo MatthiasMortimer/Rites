@@ -1,0 +1,124 @@
+---
+import Layout from '../layouts/Layout.astro';
+const next = Astro.url.searchParams.get('next') ?? '/dashboard';
+---
+
+<Layout>
+  <section class="auth-shell">
+    <div class="auth-card">
+      <p class="eyebrow">Secure access</p>
+      <h1>Employee login</h1>
+      <form id="login-form" method="post" action="/api/login" class="login-form">
+        <input type="hidden" name="next" value={next} />
+        <label>
+          Username
+          <input name="username" type="text" required />
+        </label>
+        <label>
+          Password
+          <input name="password" type="password" required />
+        </label>
+        <button type="submit">Sign in</button>
+      </form>
+      <p class="hint">Demo credentials: owner / owner123 or employee / employee123</p>
+      <p id="form-message" class="message" aria-live="polite"></p>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const form = document.querySelector('#login-form');
+  const message = document.querySelector('#form-message');
+
+  form?.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const formData = new FormData(form);
+    const payload = Object.fromEntries(formData.entries());
+
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+      window.location.href = result.redirect ?? '/dashboard';
+      return;
+    }
+
+    message.textContent = 'Invalid username or password.';
+  });
+</script>
+
+<style>
+  .auth-shell {
+    min-height: 68vh;
+    display: grid;
+    place-items: center;
+    padding: 2rem 0;
+  }
+
+  .auth-card {
+    width: min(450px, 100%);
+    background: rgba(255,255,255,0.7);
+    border: 1px solid rgba(27,27,27,0.12);
+    border-radius: 1.2rem;
+    padding: 2rem;
+    box-shadow: 0 24px 40px rgba(19, 28, 31, 0.08);
+  }
+
+  .eyebrow {
+    margin: 0 0 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.7rem;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  h1 {
+    margin: 0 0 1rem;
+  }
+
+  .login-form {
+    display: grid;
+    gap: 1rem;
+  }
+
+  label {
+    display: grid;
+    gap: 0.4rem;
+    font-weight: 600;
+  }
+
+  input {
+    padding: 0.8rem 0.9rem;
+    border-radius: 0.8rem;
+    border: 1px solid rgba(27,27,27,0.18);
+    font: inherit;
+  }
+
+  button {
+    border: 0;
+    border-radius: 0.8rem;
+    background: var(--accent);
+    color: white;
+    font: inherit;
+    font-weight: 700;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+  }
+
+  .hint,
+  .message {
+    margin-top: 1rem;
+    color: var(--muted);
+    font-size: 0.92rem;
+  }
+
+  .message {
+    min-height: 1.2em;
+    color: #b42318;
+  }
+</style>

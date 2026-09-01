@@ -1,0 +1,83 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getSessionFromCookies } from '../../lib/auth';
+import { site } from '../../lib/content';
+
+const cookieHeader = Astro.request.headers.get('cookie') ?? '';
+const session = getSessionFromCookies(cookieHeader);
+
+if (!session) {
+  Astro.redirect('/login?next=/dashboard/content');
+}
+---
+
+<Layout>
+  <section class="content-shell">
+    <div class="header-row">
+      <div>
+        <p class="eyebrow">Business details</p>
+        <h1>Site content manager</h1>
+      </div>
+      <a href="/dashboard">Back to dashboard</a>
+    </div>
+
+    <div class="panel">
+      <h2>Live site information</h2>
+      <ul>
+        <li><strong>Company:</strong> {site.company}</li>
+        <li><strong>Phone:</strong> {site.phone}</li>
+        <li><strong>Email:</strong> {site.email}</li>
+        <li><strong>Address:</strong> {site.address}</li>
+        <li><strong>Service area:</strong> {site.serviceArea}</li>
+        <li><strong>Hours:</strong> {site.hours}</li>
+      </ul>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .content-shell {
+    padding: 2rem 0;
+  }
+
+  .header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .eyebrow {
+    margin: 0 0 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.7rem;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  h1, h2 {
+    margin: 0;
+  }
+
+  .panel {
+    background: rgba(255,255,255,0.7);
+    border: 1px solid var(--line);
+    border-radius: 1.2rem;
+    padding: 1.4rem;
+    box-shadow: var(--shadow);
+  }
+
+  ul {
+    margin: 1rem 0 0;
+    padding-left: 1.2rem;
+    line-height: 2;
+    color: var(--muted);
+  }
+
+  a {
+    color: var(--accent-strong);
+    font-weight: 700;
+  }
+</style>

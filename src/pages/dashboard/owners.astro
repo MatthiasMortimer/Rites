@@ -1,0 +1,219 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { createStaffAccount, deleteStaffAccount, getStaffAccounts, updateStaffAccount, type StaffAccount } from '../../lib/auth';
+
+const cookieHeader = Astro.request.headers.get('cookie') ?? '';
+const session = (Astro as any).locals?.session ?? null;
+
+if (!session || session.role !== 'owner') {
+  Astro.redirect('/login?next=/dashboard/owners');
+}
+
+const accounts = getStaffAccounts();
+const method = Astro.request.method;
+
+if (method === 'POST') {
+  const formData = await Astro.request.formData();
+  const action = String(formData.get('action') ?? '');
+  const name = String(formData.get('name') ?? '');
+  const username = String(formData.get('username') ?? '');
+  const password = String(formData.get('password') ?? '');
+  const role = String(formData.get('role') ?? 'employee');
+  const id = String(formData.get('id') ?? '');
+
+  if (action === 'create') {
+    createStaffAccount({ name, username, password, role: role === 'owner' ? 'owner' : 'employee' });
+  }
+
+  if (action === 'update') {
+    updateStaffAccount(id, { name, username, password, role: role === 'owner' ? 'owner' : 'employee' });
+  }
+
+  if (action === 'delete') {
+    deleteStaffAccount(id);
+  }
+}
+
+const currentAccounts = getStaffAccounts();
+---
+
+<Layout>
+  <section class="owners-shell">
+    <div class="header-row">
+      <div>
+        <p class="eyebrow">Owner area</p>
+        <h1>Staff access management</h1>
+      </div>
+      <a class="back-link" href="/dashboard">Back to dashboard</a>
+    </div>
+
+    <div class="forms-grid">
+      <div class="panel">
+        <h2>Add staff</h2>
+        <form method="post">
+          <input type="hidden" name="action" value="create" />
+          <label>
+            Full name
+            <input name="name" required />
+          </label>
+          <label>
+            Username
+            <input name="username" required />
+          </label>
+          <label>
+            Password
+            <input name="password" type="password" required />
+          </label>
+          <label>
+            Role
+            <select name="role">
+              <option value="employee">Employee</option>
+              <option value="owner">Owner</option>
+            </select>
+          </label>
+          <button type="submit">Add account</button>
+        </form>
+      </div>
+
+      <div class="panel">
+        <h2>Existing accounts</h2>
+        <div class="list">
+          {currentAccounts.map((account) => (
+            <div class="account-item">
+              <div>
+                <strong>{account.name}</strong>
+                <p>{account.username} · {account.role}</p>
+              </div>
+              <div class="actions">
+                <form method="post">
+                  <input type="hidden" name="action" value="delete" />
+                  <input type="hidden" name="id" value={account.id} />
+                  <button type="submit" class="danger">Delete</button>
+                </form>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .owners-shell {
+    padding: 2rem 0;
+  }
+
+  .header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .eyebrow {
+    margin: 0 0 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.7rem;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  h1, h2 {
+    margin: 0;
+  }
+
+  .back-link {
+    color: var(--accent-strong);
+    font-weight: 700;
+  }
+
+  .forms-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 1.2rem;
+  }
+
+  .panel {
+    background: rgba(255,255,255,0.7);
+    border: 1px solid var(--line);
+    border-radius: 1.2rem;
+    padding: 1.4rem;
+    box-shadow: var(--shadow);
+  }
+
+  form {
+    display: grid;
+    gap: 0.9rem;
+    margin-top: 1rem;
+  }
+
+  label {
+    display: grid;
+    gap: 0.4rem;
+    font-weight: 600;
+  }
+
+  input, select, button {
+    font: inherit;
+  }
+
+  input, select {
+    padding: 0.72rem 0.8rem;
+    border-radius: 0.8rem;
+    border: 1px solid rgba(27,27,27,0.18);
+  }
+
+  button {
+    padding: 0.8rem 1rem;
+    border-radius: 0.8rem;
+    border: 0;
+    font-weight: 700;
+    background: var(--accent);
+    color: white;
+    cursor: pointer;
+  }
+
+  .danger {
+    background: #8d2727;
+  }
+
+  .list {
+    display: grid;
+    gap: 0.8rem;
+    margin-top: 1rem;
+  }
+
+  .account-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.8rem 0.9rem;
+    border: 1px solid var(--line);
+    border-radius: 0.9rem;
+    background: rgba(31, 78, 74, 0.02);
+  }
+
+  .account-item p {
+    margin: 0.2rem 0 0;
+    color: var(--muted);
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+  }
+
+  @media (max-width: 860px) {
+    .forms-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .header-row {
+      flex-direction: column;
+    }
+  }
+</style>

@@ -1,0 +1,127 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getSessionFromCookies } from '../lib/auth';
+
+const cookieHeader = Astro.request.headers.get('cookie') ?? '';
+const session = getSessionFromCookies(cookieHeader);
+
+if (!session) {
+  Astro.redirect('/login?next=/dashboard');
+}
+---
+
+<Layout>
+  <section class="dashboard-shell">
+    <div class="top-row">
+      <div>
+        <p class="eyebrow">Dashboard</p>
+        <h1>Welcome, {session.name}</h1>
+      </div>
+      <form action="/api/logout" method="post">
+        <button type="submit">Log out</button>
+      </form>
+    </div>
+
+    <div class="grid">
+      <a class="card" href="/dashboard/schedule">
+        <span class="badge">Schedule</span>
+        <h2>Job schedule</h2>
+        <p>Track active work, call schedules, and crew assignments.</p>
+      </a>
+      <a class="card" href="/dashboard/content">
+        <span class="badge">Content</span>
+        <h2>Business details</h2>
+        <p>Update phone number, email, service area, and company copy.</p>
+      </a>
+      <a class="card" href="/dashboard/owners">
+        <span class="badge">Owners</span>
+        <h2>Owner access</h2>
+        <p>Manage employee credentials and ownership settings.</p>
+      </a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .dashboard-shell {
+    padding: 2rem 0;
+  }
+
+  .top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .eyebrow {
+    margin: 0 0 0.35rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.72rem;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2rem, 4vw, 3rem);
+  }
+
+  button {
+    border: 0;
+    border-radius: 999px;
+    background: var(--accent);
+    color: white;
+    padding: 0.8rem 1.1rem;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.1rem;
+  }
+
+  .card {
+    display: block;
+    background: rgba(255,255,255,0.7);
+    border: 1px solid var(--line);
+    border-radius: 1.2rem;
+    padding: 1.3rem;
+    box-shadow: var(--shadow);
+  }
+
+  .badge {
+    display: inline-flex;
+    padding: 0.4rem 0.7rem;
+    border-radius: 999px;
+    background: rgba(31, 78, 74, 0.08);
+    color: var(--accent-strong);
+    font-weight: 700;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  h2 {
+    margin: 1rem 0 0.5rem;
+  }
+
+  p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  @media (max-width: 820px) {
+    .top-row,
+    .grid {
+      grid-template-columns: 1fr;
+      display: grid;
+    }
+  }
+</style>

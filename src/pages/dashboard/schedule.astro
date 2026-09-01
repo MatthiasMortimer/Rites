@@ -1,0 +1,80 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getSessionFromCookies } from '../../lib/auth';
+
+const cookieHeader = Astro.request.headers.get('cookie') ?? '';
+const session = getSessionFromCookies(cookieHeader);
+
+if (!session) {
+  Astro.redirect('/login?next=/dashboard/schedule');
+}
+---
+
+<Layout>
+  <section class="schedule-shell">
+    <div class="header-row">
+      <div>
+        <p class="eyebrow">Schedule</p>
+        <h1>Project schedule</h1>
+      </div>
+      <a href="/dashboard">Back to dashboard</a>
+    </div>
+
+    <div class="panel">
+      <h2>Upcoming work</h2>
+      <ul>
+        <li>Mon — Client walkthrough and scope review</li>
+        <li>Tue — Prep and material delivery</li>
+        <li>Wed — Residential remodel install</li>
+        <li>Thu — Final clean-up and punch list</li>
+      </ul>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .schedule-shell {
+    padding: 2rem 0;
+  }
+
+  .header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .eyebrow {
+    margin: 0 0 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.7rem;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  h1, h2 {
+    margin: 0;
+  }
+
+  .panel {
+    background: rgba(255,255,255,0.7);
+    border: 1px solid var(--line);
+    border-radius: 1.2rem;
+    padding: 1.4rem;
+    box-shadow: var(--shadow);
+  }
+
+  ul {
+    margin: 1rem 0 0;
+    padding-left: 1.2rem;
+    line-height: 2;
+    color: var(--muted);
+  }
+
+  a {
+    color: var(--accent-strong);
+    font-weight: 700;
+  }
+</style>
