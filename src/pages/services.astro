@@ -1,0 +1,10 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import { companyName, contentCards } from '../lib/content';
+const services = contentCards('Services');
+---
+<MainLayout title="Services">
+  <section class="page-intro container"><p class="eyebrow">What we do</p><h1>Work that makes a property work harder.</h1><p>From focused repairs to full improvements, {companyName} brings an organized process and durable finish to every scope.</p></section>
+  <section class="section container"><div class="card-grid">{services.map((service, index) => <article class="card"><span class="card-number">0{index + 1}</span><h3>{service.title}</h3><div set:html={service.html}></div></article>)}</div></section>
+  <section class="section band"><div class="container split"><div><p class="eyebrow">Have a project in mind?</p><h2>Let’s make the next step concrete.</h2></div><div class="section-lead"><p>Share the basics, and we’ll help you understand the likely scope and best way forward.</p><a class="button" href="/contact">Start a conversation <span aria-hidden="true">↗</span></a></div></div></section>
+</MainLayout>

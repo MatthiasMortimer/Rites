@@ -1,0 +1,11 @@
+---
+import MainLayout from '../layouts/MainLayout.astro';
+import { companyName, contentSection, site } from '../lib/content';
+const intro = contentSection('About Intro');
+const values = contentSection('About Values');
+---
+<MainLayout title="About us">
+  <section class="page-intro container"><p class="eyebrow">About {companyName}</p><div set:html={intro}></div></section>
+  <section class="section container"><div class="split"><div><p class="eyebrow">What guides the work</p><h2>Craft is in the details. Trust is in the process.</h2></div><div class="content-copy" set:html={values}></div></div></section>
+  <section class="section band"><div class="container split"><div><p class="eyebrow">Ready when you are</p><h2>A better build starts with a good conversation.</h2></div><div class="section-lead"><p>We work with homeowners, property managers, and small businesses across {site.serviceArea}.</p><a class="button" href="/contact">Get in touch <span aria-hidden="true">↗</span></a></div></div></section>
+</MainLayout>

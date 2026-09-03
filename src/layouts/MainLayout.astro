@@ -1,0 +1,55 @@
+---
+import { site } from '../lib/content';
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = `${site.company} delivers dependable residential and commercial contracting across the Portland area.` } = Astro.props;
+const pathname = Astro.url.pathname;
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/services', label: 'Services' },
+  { href: '/about', label: 'About' },
+  { href: '/contact', label: 'Contact' },
+  { href: '/dashboard', label: 'Dashboard' },
+];
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#f4efe7" />
+    <title>{title} | {site.company}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <nav class="nav container" aria-label="Main navigation">
+        <a class="brand" href="/" aria-label={`${site.company} home`}>
+          <span class="brand-mark">R<span>&</span>S</span>
+          <span class="brand-name">{site.company}</span>
+        </a>
+        <div class="nav-links">
+          {links.map((link) => (
+            <a class:list={[pathname === link.href && 'active']} href={link.href}>
+              {link.label}
+            </a>
+          ))}
+        </div>
+        <a class="nav-cta" href="/contact">Start a project <span aria-hidden="true">↗</span></a>
+      </nav>
+    </header>
+    <main><slot /></main>
+    <footer class="site-footer">
+      <div class="container footer-grid">
+        <div><a class="brand footer-brand" href="/" aria-label={`${site.company} home`}><span class="brand-mark">R<span>&</span>S</span><span class="brand-name">{site.company}</span></a><p>Built with intent. Finished with care.</p></div>
+        <div class="footer-contact"><a href={`mailto:${site.email}`}>{site.email}</a><a href={`tel:${site.phone}`}>{site.phone}</a><span>{site.serviceArea}</span></div>
+        <p class="footer-note">© {new Date().getFullYear()} {site.company}.<br />Independent contractor template.</p>
+      </div>
+    </footer>
+  </body>
+</html>

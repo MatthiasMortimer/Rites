@@ -1,0 +1,50 @@
+[
+  {
+    "id": "section-finishes",
+    "name": "Finish Carpentry",
+    "cards": [
+      {
+        "id": "fc-mon",
+        "day": "Mon",
+        "title": "Cabinet install",
+        "details": "Set and shim base cabinets for the kitchen remodel."
+      },
+      {
+        "id": "fc-wed",
+        "day": "Wed",
+        "title": "Trim and shelving",
+        "details": "Install trim details, shelving, and final wall prep."
+      }
+    ]
+  },
+  {
+    "id": "section-roofing",
+    "name": "Exterior Crew",
+    "cards": [
+      {
+        "id": "ex-tue",
+        "day": "Tueueee",
+        "title": "Roofing coordination",
+        "details": "Material delivery and flashing prep at the Cedar project."
+      },
+      {
+        "id": "ex-fri",
+        "day": "Fri",
+        "title": "Final inspection",
+        "details": "Walk the site with the superintendent and complete punch items."
+      }
+    ]
+  },
+  {
+    "id": "section-service",
+    "name": "Service Calls",
+    "cards": [
+      {
+        "id": "svc-thu",
+        "day": "Thu",
+        "title": "Repair and maintenance",
+        "details": "Address leak repairs and hardware replacements in the tenant units."
+      }
+    ]
+  }
+]

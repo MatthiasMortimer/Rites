@@ -1,0 +1,26 @@
+[
+  {
+    "id": "pay_1788304280519_ed04540f0717",
+    "customerEmail": "owner@example.com",
+    "amountCents": 5000,
+    "currency": "USD",
+    "provider": "cashapp",
+    "reference": "checkout_test_456",
+    "status": "paid",
+    "paid": true,
+    "createdAt": "2026-09-01T23:11:20.519Z",
+    "updatedAt": "2026-09-01T23:11:20.519Z"
+  },
+  {
+    "id": "pay_1788304280518_93726730c62a",
+    "customerEmail": "owner@example.com",
+    "amountCents": 5000,
+    "currency": "USD",
+    "provider": "stripe",
+    "reference": "checkout_test_123",
+    "status": "pending",
+    "paid": false,
+    "createdAt": "2026-09-01T23:11:20.518Z",
+    "updatedAt": "2026-09-01T23:11:20.518Z"
+  }
+]
