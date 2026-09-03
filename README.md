@@ -1,46 +1,30 @@
-# Astro Starter Kit: Basics
+# Rites & Secure contractor template
+
+A reusable four-page Astro contractor website. Update the company details and page copy in [`src/content/site.md`](src/content/site.md); the site parses frontmatter and markdown at build time with `gray-matter` and `marked`.
+
+## Commands
 
 ```sh
-npm create astro@latest -- --template basics
+npm install
+npm run dev
+npm run build
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+Pages: `/`, `/services`, `/about`, and `/contact`.
 
-## 🚀 Project Structure
+Replace the Unsplash URL in `src/content/site.md` and the matching CSS background URL with a project-specific image before launch. The contact form currently opens the visitor's email client through `mailto:`; swap the form action for Formspree, FormSubmit, or your backend when deploying.
+# Rites & Secure contractor template
 
-Inside of your Astro project, you'll see the following folders and files:
+A reusable Astro contractor website. Update the company details and page copy in [`src/content/site.md`](src/content/site.md); the site parses frontmatter and Markdown with `gray-matter` and `marked`.
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
+## Commands
+
+```sh
+npm install
+npm run dev
+npm run build
 ```
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+Pages: `/`, `/services`, `/about`, `/contact`, and the SSR-protected `/dashboard`.
 
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Set a strong `SESSION_SECRET` environment variable before deploying. The included accounts are demo credentials only and should be replaced with hashed credentials and a persistent production user store. The contact form currently opens the visitor's email client through `mailto:`; swap it for a backend when deploying.

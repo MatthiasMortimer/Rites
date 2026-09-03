@@ -1,6 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { sanitizeNextPath } from '../lib/auth';
+
 const next = Astro.url.searchParams.get('next') ?? '/dashboard';
+const safeNext = sanitizeNextPath(next, '/dashboard');
 ---
 
 <Layout>
@@ -9,7 +12,7 @@ const next = Astro.url.searchParams.get('next') ?? '/dashboard';
       <p class="eyebrow">Secure access</p>
       <h1>Employee login</h1>
       <form id="login-form" method="post" action="/api/login" class="login-form">
-        <input type="hidden" name="next" value={next} />
+        <input type="hidden" name="next" value={safeNext} />
         <label>
           Username
           <input name="username" type="text" required />
@@ -27,8 +30,8 @@ const next = Astro.url.searchParams.get('next') ?? '/dashboard';
 </Layout>
 
 <script>
-  const form = document.querySelector('#login-form');
-  const message = document.querySelector('#form-message');
+  const form = document.querySelector<HTMLFormElement>('#login-form');
+  const message = document.querySelector<HTMLParagraphElement>('#form-message');
 
   form?.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -47,7 +50,9 @@ const next = Astro.url.searchParams.get('next') ?? '/dashboard';
       return;
     }
 
-    message.textContent = 'Invalid username or password.';
+    if (message) {
+      message.textContent = 'Invalid username or password.';
+    }
   });
 </script>
 

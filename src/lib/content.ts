@@ -4,27 +4,50 @@ import matter from 'gray-matter';
 import { marked } from 'marked';
 
 const contentFile = path.resolve(process.cwd(), 'src/content/site.md');
-const raw = fs.readFileSync(contentFile, 'utf8');
-const parsed = matter(raw);
 
-const frontmatter = parsed.data ?? {};
+export interface SiteContent {
+  company: string;
+  shortName: string;
+  phone: string;
+  email: string;
+  address: string;
+  serviceArea: string;
+  hours: string;
+  heroImage: string;
+}
 
-export const site = {
-  company: frontmatter.company ?? 'Summit & Stone Contracting',
-  shortName: frontmatter.shortName ?? 'Summit & Stone',
-  phone: frontmatter.phone ?? '(555) 948-2201',
-  email: frontmatter.email ?? 'hello@summitandstone.com',
-  address: frontmatter.address ?? '214 Cedar Lane, Suite 400, Portland, OR 97205',
-  serviceArea: frontmatter.serviceArea ?? 'Serving Portland and the greater metro area',
-  hours: frontmatter.hours ?? 'Mon-Fri • 7:00 AM - 6:00 PM',
-  heroImage: frontmatter.heroImage ?? '/images/contractor-team.jpg',
-};
+export function getSiteContent() {
+  const raw = fs.readFileSync(contentFile, 'utf8');
+  const parsed = matter(raw);
+
+  return {
+    frontmatter: (parsed.data ?? {}) as Partial<SiteContent>,
+    content: parsed.content,
+  };
+}
+
+export function saveSiteContent(updates: Partial<SiteContent>) {
+  const { frontmatter, content } = getSiteContent();
+  const nextFrontmatter = {
+    ...frontmatter,
+    ...updates,
+  } as Record<string, unknown>;
+
+  const output = matter.stringify(content, nextFrontmatter);
+  fs.writeFileSync(contentFile, output);
+  return nextFrontmatter as SiteContent;
+}
+
+export const site = getSiteContent().frontmatter as SiteContent;
+
+export const companyName = site.company;
 
 function getSections() {
+  const { content } = getSiteContent();
   const sections = new Map<string, string>();
-  const sectionPattern = /^##\s*(.+?)\n([\s\S]*?)(?=^##\s|\Z)/gm;
+  const sectionPattern = /^##\s*(.+?)\r?\n([\s\S]*?)(?=^##\s|$(?![\s\S]))/gm;
 
-  for (const match of parsed.content.matchAll(sectionPattern)) {
+  for (const match of content.matchAll(sectionPattern)) {
     const title = match[1].trim();
     const body = match[2].trim();
     sections.set(title, body);
@@ -37,4 +60,19 @@ export function contentSection(title: string) {
   const sections = getSections();
   const content = sections.get(title) ?? '';
   return marked.parse(content);
+}
+
+export function contentCards(title: string) {
+  const section = getSections().get(title) ?? '';
+
+  return section
+    .split(/^### /m)
+    .slice(1)
+    .map((card) => {
+      const [cardTitle, ...body] = card.trim().split(/\r?\n/);
+      return {
+        title: cardTitle.trim(),
+        html: marked.parse(body.join('\n').trim()),
+      };
+    });
 }

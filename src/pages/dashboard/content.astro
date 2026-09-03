@@ -1,14 +1,49 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { getSessionFromCookies } from '../../lib/auth';
-import { site } from '../../lib/content';
+import { getSessionFromRequest } from '../../lib/auth';
+import { getSiteContent, saveSiteContent } from '../../lib/content';
+import '../../styles/dashboard.css';
 
-const cookieHeader = Astro.request.headers.get('cookie') ?? '';
-const session = getSessionFromCookies(cookieHeader);
+const session = getSessionFromRequest(Astro.request);
 
 if (!session) {
-  Astro.redirect('/login?next=/dashboard/content');
+  return Astro.redirect('/login?next=/dashboard/content');
 }
+
+if (session.role !== 'owner') {
+  return new Response('Forbidden', { status: 403 });
+}
+
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const nextValues = {
+    company: String(formData.get('company') ?? '').trim(),
+    shortName: String(formData.get('shortName') ?? '').trim(),
+    phone: String(formData.get('phone') ?? '').trim(),
+    email: String(formData.get('email') ?? '').trim(),
+    address: String(formData.get('address') ?? '').trim(),
+    serviceArea: String(formData.get('serviceArea') ?? '').trim(),
+    hours: String(formData.get('hours') ?? '').trim(),
+    heroImage: String(formData.get('heroImage') ?? '').trim(),
+  };
+
+  const current = getSiteContent().frontmatter;
+  saveSiteContent({
+    company: nextValues.company || current.company || 'SecureRites',
+    shortName: nextValues.shortName || current.shortName || 'Rites',
+    phone: nextValues.phone || current.phone || '',
+    email: nextValues.email || current.email || '',
+    address: nextValues.address || current.address || '',
+    serviceArea: nextValues.serviceArea || current.serviceArea || '',
+    hours: nextValues.hours || current.hours || '',
+    heroImage: nextValues.heroImage || current.heroImage || '',
+  });
+
+  return Astro.redirect('/dashboard/content?updated=1');
+}
+
+const site = getSiteContent().frontmatter;
+const successMessage = Astro.url.searchParams.get('updated') === '1' ? 'Content updated.' : '';
 ---
 
 <Layout>
@@ -22,61 +57,44 @@ if (!session) {
     </div>
 
     <div class="panel">
-      <h2>Live site information</h2>
-      <ul>
-        <li><strong>Company:</strong> {site.company}</li>
-        <li><strong>Phone:</strong> {site.phone}</li>
-        <li><strong>Email:</strong> {site.email}</li>
-        <li><strong>Address:</strong> {site.address}</li>
-        <li><strong>Service area:</strong> {site.serviceArea}</li>
-        <li><strong>Hours:</strong> {site.hours}</li>
-      </ul>
+      <h2>Update site information</h2>
+      <form method="post" class="editor-form">
+        <div class="field-grid">
+          <label>Company name<input name="company" value={site.company ?? ''} required /></label>
+          <label>Short name<input name="shortName" value={site.shortName ?? ''} /></label>
+          <label>Phone<input name="phone" value={site.phone ?? ''} /></label>
+          <label>Email<input name="email" type="email" value={site.email ?? ''} /></label>
+          <label class="full-width">Address<input name="address" value={site.address ?? ''} /></label>
+          <label class="full-width">Service area<input name="serviceArea" value={site.serviceArea ?? ''} /></label>
+          <label class="full-width">Hours<input name="hours" value={site.hours ?? ''} /></label>
+          <label class="full-width">Hero image URL<input name="heroImage" value={site.heroImage ?? ''} /></label>
+        </div>
+        <button type="submit">Save changes</button>
+      </form>
+      {successMessage && <p class="success">{successMessage}</p>}
     </div>
   </section>
 </Layout>
 
 <style>
-  .content-shell {
-    padding: 2rem 0;
+  .editor-form {
+    display: grid;
+    gap: 1.2rem;
+    margin-top: 1rem;
   }
 
-  .header-row {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
+  .field-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
-    margin-bottom: 1rem;
   }
 
-  .eyebrow {
-    margin: 0 0 0.4rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    font-size: 0.7rem;
-    color: var(--accent);
-    font-weight: 700;
+  .full-width {
+    grid-column: 1 / -1;
   }
 
-  h1, h2 {
-    margin: 0;
-  }
-
-  .panel {
-    background: rgba(255,255,255,0.7);
-    border: 1px solid var(--line);
-    border-radius: 1.2rem;
-    padding: 1.4rem;
-    box-shadow: var(--shadow);
-  }
-
-  ul {
-    margin: 1rem 0 0;
-    padding-left: 1.2rem;
-    line-height: 2;
-    color: var(--muted);
-  }
-
-  a {
+  .success {
+    margin-top: 1rem;
     color: var(--accent-strong);
     font-weight: 700;
   }

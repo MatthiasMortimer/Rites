@@ -1,12 +1,13 @@
 import type { APIRoute } from 'astro';
-import { createSessionCookie, getSessionFromCookies, verifyCredentials } from '../../lib/auth';
+import { createSessionCookie, getSessionFromCookies, sanitizeNextPath, verifyCredentials } from '../../lib/auth';
 
 export const POST: APIRoute = async ({ request, redirect }) => {
   try {
     const body = await request.json();
     const username = String(body.username ?? '');
     const password = String(body.password ?? '');
-    const next = String(body.next ?? '/dashboard');
+    const requestedNext = String(body.next ?? '/dashboard');
+    const next = sanitizeNextPath(requestedNext, '/dashboard');
 
     const account = verifyCredentials(username, password);
     if (!account) {

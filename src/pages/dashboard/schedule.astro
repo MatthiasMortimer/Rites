@@ -1,13 +1,90 @@
 ---
 import Layout from '../../layouts/Layout.astro';
-import { getSessionFromCookies } from '../../lib/auth';
+import { getSessionFromRequest } from '../../lib/auth';
+import { getWeeklySchedule, saveWeeklySchedule } from '../../lib/schedule';
+import '../../styles/dashboard.css';
 
-const cookieHeader = Astro.request.headers.get('cookie') ?? '';
-const session = getSessionFromCookies(cookieHeader);
+const session = getSessionFromRequest(Astro.request);
 
 if (!session) {
-  Astro.redirect('/login?next=/dashboard/schedule');
+  return Astro.redirect('/login?next=/dashboard/schedule');
 }
+
+const isOwner = session.role === 'owner';
+
+if (Astro.request.method === 'POST' && isOwner) {
+  const formData = await Astro.request.formData();
+  const action = String(formData.get('action') ?? '');
+  const sections = getWeeklySchedule();
+
+  if (action === 'save-section') {
+    const sectionId = String(formData.get('section-id') ?? '');
+    const section = sections.find((entry) => entry.id === sectionId);
+
+    if (section) {
+      section.name = String(formData.get(`section-name-${sectionId}`) ?? section.name).trim() || section.name;
+      section.cards = (section.cards ?? []).map((card) => {
+        const cardId = card.id;
+        return {
+          ...card,
+          day: String(formData.get(`card-day-${cardId}`) ?? card.day).trim() || card.day,
+          title: String(formData.get(`card-title-${cardId}`) ?? card.title).trim() || card.title,
+          details: String(formData.get(`card-details-${cardId}`) ?? card.details).trim() || card.details,
+        };
+      });
+      saveWeeklySchedule(sections);
+    }
+    return Astro.redirect('/dashboard/schedule?updated=1');
+  }
+
+  if (action === 'add-section') {
+    const sectionName = String(formData.get('new-section-name') ?? '').trim();
+    if (sectionName) {
+      sections.push({
+        id: `section-${Date.now()}`,
+        name: sectionName,
+        cards: [],
+      });
+      saveWeeklySchedule(sections);
+    }
+    return Astro.redirect('/dashboard/schedule?updated=1');
+  }
+
+  if (action === 'remove-section') {
+    const sectionId = String(formData.get('section-id') ?? '');
+    const nextSections = sections.filter((section) => section.id !== sectionId);
+    saveWeeklySchedule(nextSections);
+    return Astro.redirect('/dashboard/schedule?updated=1');
+  }
+
+  if (action === 'add-card') {
+    const sectionId = String(formData.get('section-id') ?? '');
+    const section = sections.find((entry) => entry.id === sectionId);
+    if (section) {
+      section.cards.push({
+        id: `card-${Date.now()}`,
+        day: 'Mon',
+        title: 'New task',
+        details: 'Add a description for this crew assignment.',
+      });
+      saveWeeklySchedule(sections);
+    }
+    return Astro.redirect('/dashboard/schedule?updated=1');
+  }
+
+  if (action === 'remove-card') {
+    const cardId = String(formData.get('card-id') ?? '');
+    const nextSections = sections.map((section) => ({
+      ...section,
+      cards: (section.cards ?? []).filter((card) => card.id !== cardId),
+    }));
+    saveWeeklySchedule(nextSections);
+    return Astro.redirect('/dashboard/schedule?updated=1');
+  }
+}
+
+const schedule = getWeeklySchedule();
+const updated = Astro.url.searchParams.get('updated') === '1';
 ---
 
 <Layout>
@@ -15,66 +92,188 @@ if (!session) {
     <div class="header-row">
       <div>
         <p class="eyebrow">Schedule</p>
-        <h1>Project schedule</h1>
+        <h1>Weekly project schedule</h1>
       </div>
       <a href="/dashboard">Back to dashboard</a>
     </div>
 
-    <div class="panel">
-      <h2>Upcoming work</h2>
-      <ul>
-        <li>Mon — Client walkthrough and scope review</li>
-        <li>Tue — Prep and material delivery</li>
-        <li>Wed — Residential remodel install</li>
-        <li>Thu — Final clean-up and punch list</li>
-      </ul>
-    </div>
+    {isOwner ? (
+      <div class="editor-form">
+        <div class="toolbar">
+          {updated && <span class="status">Schedule saved</span>}
+        </div>
+
+        <div class="section-grid">
+          {schedule.map((section) => (
+            <section class="panel section-panel" key={section.id}>
+              <form method="post" class="section-form">
+                <div class="section-header">
+                  <input name={`section-name-${section.id}`} value={section.name} />
+                  <button type="submit" name="action" value="remove-section" class="inline action">Remove team</button>
+                  <input type="hidden" name="section-id" value={section.id} />
+                </div>
+
+                <div class="card-list">
+                  {section.cards.map((card) => (
+                    <div class="schedule-card">
+                      <label>Day<input name={`card-day-${card.id}`} value={card.day} /></label>
+                      <label>Title<input name={`card-title-${card.id}`} value={card.title} /></label>
+                      <label>Details<textarea name={`card-details-${card.id}`} rows="3">{card.details}</textarea></label>
+                      <div class="card-actions">
+                        <button type="submit" name="action" value="remove-card" class="inline danger">Remove card</button>
+                        <input type="hidden" name="card-id" value={card.id} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div class="add-row">
+                  <button type="submit" name="action" value="save-section" class="inline">Save section</button>
+                  <button type="submit" name="action" value="add-card" class="inline secondary">Add card</button>
+                  <input type="hidden" name="section-id" value={section.id} />
+                </div>
+              </form>
+            </section>
+          ))}
+        </div>
+
+        <div class="new-section panel">
+          <h2>Add a team section</h2>
+          <form method="post" class="add-section-form">
+            <div class="new-section-row">
+              <input type="text" name="new-section-name" placeholder="Example: Plumbing Crew" />
+              <button type="submit" name="action" value="add-section" class="inline">Add team</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    ) : (
+      <div class="section-grid">
+        {schedule.map((section) => (
+          <section class="panel section-panel">
+            <h2>{section.name}</h2>
+            <div class="card-list">
+              {section.cards.map((card) => (
+                <article class="schedule-card">
+                  <span class="day-pill">{card.day}</span>
+                  <h3>{card.title}</h3>
+                  <p>{card.details}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div>
+    )}
   </section>
 </Layout>
 
 <style>
-  .schedule-shell {
-    padding: 2rem 0;
+  .editor-form {
+    display: grid;
+    gap: 1.2rem;
   }
 
-  .header-row {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
+  .section-form,
+  .add-section-form {
+    display: grid;
     gap: 1rem;
+  }
+
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .section-panel {
+    min-height: 100%;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
     margin-bottom: 1rem;
   }
 
-  .eyebrow {
-    margin: 0 0 0.4rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    font-size: 0.7rem;
-    color: var(--accent);
-    font-weight: 700;
+  .section-header input {
+    flex: 1;
   }
 
-  h1, h2 {
-    margin: 0;
+  .card-list {
+    display: grid;
+    gap: 0.8rem;
   }
 
-  .panel {
-    background: rgba(255,255,255,0.7);
+  .schedule-card {
+    display: grid;
+    gap: 0.7rem;
+    padding: 0.85rem;
     border: 1px solid var(--line);
-    border-radius: 1.2rem;
-    padding: 1.4rem;
-    box-shadow: var(--shadow);
+    border-radius: 0.9rem;
+    background: rgba(31, 78, 74, 0.03);
   }
 
-  ul {
-    margin: 1rem 0 0;
-    padding-left: 1.2rem;
-    line-height: 2;
+  .day-pill {
+    display: inline-flex;
+    justify-self: start;
+    border-radius: 999px;
+    background: rgba(31, 78, 74, 0.08);
+    color: var(--accent-strong);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.35rem 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .schedule-card p {
+    margin: 0;
+    line-height: 1.6;
     color: var(--muted);
   }
 
-  a {
-    color: var(--accent-strong);
-    font-weight: 700;
+  .card-actions, .new-section-row, .add-row {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .card-actions {
+    justify-content: flex-end;
+  }
+
+  .inline {
+    padding-inline: 0.9rem;
+  }
+
+  .action {
+    white-space: nowrap;
+  }
+
+  .new-section {
+    display: grid;
+    gap: 0.8rem;
+  }
+
+  @media (max-width: 980px) {
+    .section-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .section-grid {
+      grid-template-columns: 1fr;
+    }
   }
 </style>

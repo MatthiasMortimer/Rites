@@ -1,12 +1,12 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getSessionFromCookies } from '../lib/auth';
+import { getSessionFromRequest } from '../lib/auth';
+import '../styles/dashboard.css';
 
-const cookieHeader = Astro.request.headers.get('cookie') ?? '';
-const session = getSessionFromCookies(cookieHeader);
+const session = getSessionFromRequest(Astro.request);
 
 if (!session) {
-  Astro.redirect('/login?next=/dashboard');
+  return Astro.redirect('/login?next=/dashboard');
 }
 ---
 
@@ -43,10 +43,6 @@ if (!session) {
 </Layout>
 
 <style>
-  .dashboard-shell {
-    padding: 2rem 0;
-  }
-
   .top-row {
     display: flex;
     align-items: center;
@@ -55,29 +51,9 @@ if (!session) {
     margin-bottom: 1.5rem;
   }
 
-  .eyebrow {
-    margin: 0 0 0.35rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    font-size: 0.72rem;
-    color: var(--accent);
-    font-weight: 700;
-  }
-
   h1 {
     margin: 0;
     font-size: clamp(2rem, 4vw, 3rem);
-  }
-
-  button {
-    border: 0;
-    border-radius: 999px;
-    background: var(--accent);
-    color: white;
-    padding: 0.8rem 1.1rem;
-    font: inherit;
-    font-weight: 700;
-    cursor: pointer;
   }
 
   .grid {

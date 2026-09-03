@@ -1,19 +1,17 @@
 import { defineMiddleware } from 'astro:middleware';
-import { getSessionFromCookies, isAllowedForPath, isProtectedPath } from './lib/auth';
+import { buildLoginRedirect, getSessionFromRequest, isAllowedForPath, isProtectedPath } from './lib/auth';
 
 export const onRequest = defineMiddleware((context, next) => {
   const pathname = context.url.pathname;
-  const cookieHeader = context.request.headers.get('cookie') ?? '';
-  const session = getSessionFromCookies(cookieHeader);
+  const session = getSessionFromRequest(context.request);
+  context.locals.session = session;
 
   if (pathname === '/login' && session) {
     return context.redirect('/dashboard');
   }
 
   if (isProtectedPath(pathname) && !session) {
-    const target = new URL('/login', context.url.origin);
-    target.searchParams.set('next', pathname);
-    return context.redirect(target.toString());
+    return context.redirect(buildLoginRedirect(pathname, context.url.origin));
   }
 
   if (isProtectedPath(pathname) && session && !isAllowedForPath(pathname, session.role)) {
